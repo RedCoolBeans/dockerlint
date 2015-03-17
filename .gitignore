@@ -1,0 +1,5 @@
+node_modules
+*.log
+*.tgz
+lib
+bin/dockerlint.js

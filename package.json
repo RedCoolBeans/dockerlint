@@ -1,0 +1,43 @@
+{
+  "name": "dockerlint",
+  "version": "0.1.0",
+  "description": "Linting for Dockerfiles",
+  "main": "bin/dockerlint",
+  "bin": {
+    "dockerlint": "bin/dockerlint.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+      "name": "Jasper Lievisse Adriaanse",
+      "email": "jasper@redcoolbeans.com",
+      "url": "http://www.redcoolbeans.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/redcoolbeans/dockerlint.git"
+  },
+  "homepage": "https://github.com/redcoolbeans/dockerlint",
+  "bugs": {
+    "url": "https://github.com/redcoolbeans/dockerlint/issues"
+  },
+  "keywords": [
+    "docker",
+    "dockerfile",
+    "lint",
+    "validate"
+  ],
+  "dependencies": {
+    "sty": "^0.6.1",
+    "subarg": "^1.0.0"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.9.0"
+  },
+  "engines": {
+    "node": ">= 0.10.0",
+    "coffee-script": ">= 1.0.1"
+  }
+}
