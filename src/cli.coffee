@@ -6,7 +6,7 @@ utils  = require "#{__dirname}/utils"
 
 usage = ->
   console.log "Dockerlint #{meta["version"]}\n\n
-  \tusage: dockerlint [-hp] Dockerfile"
+  \tusage: dockerlint [-h] [-dp] -f Dockerfile"
   process.exit 0
 
 report = (dockerfile, ok) ->
