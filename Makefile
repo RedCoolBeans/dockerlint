@@ -1,3 +1,5 @@
+REPORTER ?= spec
+
 all: js
 
 deps:
@@ -24,3 +26,13 @@ dist: js
 
 tag:
 	git tag -a "v`cat package.json| jsawk  'return this.version'`" -m `cat package.json| jsawk  'return this.version'`
+
+test:
+	@NODE_ENV=test ./node_modules/.bin/mocha \
+		--require coffee-script/register \
+		--require chai \
+		--reporter ${REPORTER} \
+		--compilers coffee:coffee-script/register \
+		test/*.coffee
+
+.PHONY: deps lint run tag test

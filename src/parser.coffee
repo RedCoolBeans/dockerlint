@@ -7,7 +7,7 @@ fs    = require 'fs'
 utils = require "#{__dirname}/utils"
 
 # Return the first word from a string
-getInstruction = (s) ->
+exports.getInstruction = (s) ->
   instruction = s.split(' ')[0]
   if instruction is '#'
     'comment'
@@ -16,8 +16,8 @@ getInstruction = (s) ->
 
 # Return everything but the first word from a string,
 # and remove a trailing '\' if needed
-getArguments = (s) ->
-  inst = getInstruction(s)
+exports.getArguments = (s) ->
+  inst = this.getInstruction(s)
   inst = '#' if inst == 'comment'
   [s.replace(inst, '').replace('\\', '').trim()]
 
