@@ -8,7 +8,7 @@ sty  = require 'sty'
 String::beginsWith ?= (s) -> @[...s.length] is s
 String::endsWith   ?= (s) -> s is '' or @[-s.length..] is s
 
-# Return true if empty, false otherwise.
+# Return false if empty, false otherwise.
 exports.notEmpty = (s) -> not (s.trim() == '')
 
 # log a message to the user, with increasing levels of importance:
