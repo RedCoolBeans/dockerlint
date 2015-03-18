@@ -21,6 +21,13 @@ such as the common use case of `ADD`.
 
 In order to treat warnings as errors, use the `-p` flag.
 
+### Running from a git clone
+
+If you've cloned this repository, you can run `dockerlint` with:
+
+	make deps # runs npm install
+    make js && coffee bin/dockerlint.coffee
+
 ## Roadmap
 
 - Add support for --version which checks against a specific Docker version
