@@ -23,7 +23,6 @@ describe "getArguments", ->
     parser.getArguments('RUN yum -y update \\').should.be.deep.equal ['yum -y update']
 
   it "should leave backslashes elsewhere", ->
-    cmd = 'RUN yum -y update && \\ yum -y install tmux'
     parser.getArguments('RUN yum -y update && \\ yum -y install tmux').should.equal ['yum -y update && \\ yum -y install tmux']
 
 describe "parser", ->
