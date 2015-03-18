@@ -7,13 +7,33 @@ Linting tool for Dockerfiles based on recommendations from
 
 With [npm](https://npmjs.org/) just do:
 
-    npm install -g dockerlint
+    $ [sudo] npm install -g dockerlint
+
+## Usage
+
+Once installed it's as easy as:
+
+    dockerlint -f Dockerfile
+
+Which will parse the file and notify you about any actual errors (such an
+omitted tag when `:` is set), and warn you about common pitfalls or bad idiom
+such as the common use case of `ADD`.
+
+In order to treat warnings as errors, use the `-p` flag.
+
+## Roadmap
+
+- Add support for --version which checks against a specific Docker version
+- Refactor code to move the rule specific functions into a Rule class
 
 ## License
 
 MIT, please see the LICENSE file.
 
-## ToDo
+## Contributing
 
-- Add support for --version which checks against a specific Docker version
-- Move the rule specific functions into a Rule class
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
