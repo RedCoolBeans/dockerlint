@@ -24,6 +24,7 @@ exports.getArguments = (s) ->
 exports.parser = (dockerfile) ->
   # First try to parse the entire file into `rules` before analyzing it.
   rules = []
+  self  = this
   do ->
     lineno = 1
     cont   = false
@@ -35,20 +36,20 @@ exports.parser = (dockerfile) ->
         if line.endsWith '\\'
           if cont
             # already on a continuation, just append to arguments
-            rule[0].arguments = rule[0].arguments.concat getArguments(line)
+            rule[0].arguments = rule[0].arguments.concat self.getArguments(line)
           else
             cont = true
-            rule.push line: lineno, instruction: getInstruction(line), arguments: getArguments(line)
+            rule.push line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
         # if current line does not end with \ and cont is true
         # push the saved rule + arguments of current line into `rules`
         # and set `cont` to false and empty `rule`
         else if cont and not line.endsWith '\\'
-          rules.push line: rule[0].line, instruction: rule[0].instruction, arguments: rule[0].arguments.concat getArguments(line)
+          rules.push line: rule[0].line, instruction: rule[0].instruction, arguments: rule[0].arguments.concat self.getArguments(line)
           rule = []
           cont = false
         # Just save the line, nothing fancy going on now.
         else if not (line.endsWith '\\' and cont)
-          rules.push line: lineno, instruction: getInstruction(line), arguments: getArguments(line)
+          rules.push line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
 
       lineno++
   rules
