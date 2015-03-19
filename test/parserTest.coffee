@@ -38,6 +38,9 @@ describe "parser", ->
   it "should return nothing when handling a non-existent file", ->
     parser.parser('test/dockerfiles/nonexistent-file').should.be.deep.equal []
 
+  it "should count the lines correctly", ->
+    parser.parser('test/dockerfiles/line_count')[3].line.should.be.deep.equal 8
+
   it "should handle line continuations", ->
     output = [
       { line: 1, instruction: 'FROM', arguments: [ 'cargos:latest' ] },
@@ -45,6 +48,3 @@ describe "parser", ->
       { line: 7, instruction: 'RUN',  arguments: [ 'yum -y update && \\\\ yum -y install tmux' ] }
     ]
     parser.parser('test/dockerfiles/line_continuations').should.be.deep.equal output
-
-  it "should count the lines correctly", ->
-    parser.parser('test/dockerfiles/line_count')[3].line.should.be.deep.equal 8
