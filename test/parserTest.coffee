@@ -22,6 +22,9 @@ describe "getArguments", ->
   it "should remove trailing backslashes", ->
     parser.getArguments('RUN yum -y update \\').should.be.deep.equal ['yum -y update']
 
+  it "should remove trailing backslashes followed by whitespace", ->
+    parser.getArguments('RUN yum -y update \\       ').should.be.deep.equal ['yum -y update']
+
   it "should leave backslashes elsewhere", ->
     parser.getArguments('RUN yum -y update && \\ yum -y install tmux').should.be.deep.equal ['yum -y update && \\ yum -y install tmux']
 
