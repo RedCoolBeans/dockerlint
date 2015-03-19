@@ -29,7 +29,13 @@ exports.parser = (dockerfile) ->
     lineno = 1
     cont   = false
     rule   = []
-    for line in fs.readFileSync(dockerfile).toString().split '\n'
+
+    try
+      data = fs.readFileSync(dockerfile).toString().split '\n'
+    catch e
+      return []
+
+    for line in data
       if utils.notEmpty(line)
         # If the current line ends with \ then set `cont` to true,
         # save the line and instruction and arguments into `rule`.

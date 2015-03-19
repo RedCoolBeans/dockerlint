@@ -29,7 +29,22 @@ describe "getArguments", ->
     parser.getArguments('RUN yum -y update && \\ yum -y install tmux').should.be.deep.equal ['yum -y update && \\ yum -y install tmux']
 
 describe "parser", ->
-  it "should handle empty files"
-  it "should count the lines"
-  it "should handle a non-existent file"
-  it "should handle line continuations"
+  it "should handle empty files", ->
+    parser.parser('test/dockerfiles/empty').should.be.deep.equal []
+
+  it "should handle comment-only files", ->
+    parser.parser('test/dockerfiles/comment_only').should.be.deep.equal [{line: 1, instruction: 'comment', arguments: ['MIT licensed']}]
+
+  it "should return nothing when handling a non-existent file", ->
+    parser.parser('test/dockerfiles/nonexistent-file').should.be.deep.equal []
+
+  it "should handle line continuations", ->
+    output = [
+      { line: 1, instruction: 'FROM', arguments: [ 'cargos:latest' ] },
+      { line: 3, instruction: 'RUN',  arguments: [ 'yum update &&', 'yum install mg &&', 'yum upgrade' ] },
+      { line: 7, instruction: 'RUN',  arguments: [ 'yum -y update && \\\\ yum -y install tmux' ] }
+    ]
+    parser.parser('test/dockerfiles/line_continuations').should.be.deep.equal output
+
+  it "should count the lines correctly", ->
+    parser.parser('test/dockerfiles/line_count')[3].line.should.be.deep.equal 8

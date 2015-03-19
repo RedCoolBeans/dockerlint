@@ -1,0 +1,7 @@
+FROM cargos:latest
+
+RUN yum update && \
+    yum install mg && \
+    yum upgrade
+
+RUN yum -y update && \\ yum -y install tmux

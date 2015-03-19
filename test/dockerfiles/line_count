@@ -1,0 +1,8 @@
+# MIT licensed
+
+FROM cargos:latest
+
+RUN pkgin update && \
+    pkgin install tmux
+
+EXPOSE 80
