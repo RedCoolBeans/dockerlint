@@ -25,7 +25,7 @@ In order to treat warnings as errors, use the `-p` flag.
 
 If you've cloned this repository, you can run `dockerlint` with:
 
-	make deps # runs npm install
+    make deps # runs npm install
     make js && coffee bin/dockerlint.coffee
 
 ## Roadmap
