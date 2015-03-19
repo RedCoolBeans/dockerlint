@@ -19,7 +19,7 @@ exports.getInstruction = (s) ->
 exports.getArguments = (s) ->
   inst = this.getInstruction(s)
   inst = '#' if inst == 'comment'
-  [s.replace(inst, '').replace('\\', '').trim()]
+  [s.replace(inst, '').replace(/\\(\s*)$/, '').trim()]
 
 exports.parser = (dockerfile) ->
   # First try to parse the entire file into `rules` before analyzing it.
