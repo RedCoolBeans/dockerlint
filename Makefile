@@ -13,7 +13,7 @@ js:
 	coffee -o lib -c src
 	# Insert shebang so the resulting script runs standalone
 	{ echo '#!/usr/bin/env node '; cat bin/dockerlint.js; } > bin/dockerlint.js.tmp
-	mv bin/dockerlint.js{.tmp,}
+	mv bin/dockerlint.js.tmp bin/dockerlint.js
 
 clean:
 	rm -fr bin/*.js bin/*.tmp lib *.tgz
