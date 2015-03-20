@@ -17,28 +17,29 @@ exports.all = [
 Array::filter = (func) -> x for x in @ when func(x)
 
 # Returns all rules for `instruction`
-getAll = (instruction, rules) ->
+exports.getAll = (instruction, rules) ->
   rules.filter (r) -> r.instruction is instruction
 
 # Returns all rules except those for `instruction`.
-getAllExcept = (instruction, rules) ->
+exports.getAllExcept = (instruction, rules) ->
   rules.filter (r) -> r.instruction isnt instruction
 
 # FROM must be the first non-comment instruction in the Dockerfile
 # Reports: ERROR
 exports.from_first = (rules) ->
-  non_comments = getAllExcept('comment', rules)
+  non_comments = this.getAllExcept('comment', rules)
   first = non_comments[0]
 
   if first.instruction isnt 'FROM'
     utils.log 'ERROR', "First instruction must be 'FROM', is: #{first.instruction}"
     return 'failed'
+  return 'ok'
 
 # If no tag is given to the FROM instruction, latest is assumed. If the used
 # tag does not exist, an error will be returned.
 # Reports: ERROR if tag is empty
 exports.no_empty_tag = (rules) ->
-  from = getAll('FROM', rules)
+  from = this.getAll('FROM', rules)
   for rule in from
     # FROM lines can only have a single argument, so use [0].
     if rule.arguments[0].match /:/
@@ -46,24 +47,26 @@ exports.no_empty_tag = (rules) ->
       unless utils.notEmpty tag
         utils.log 'ERROR', "Tag must not be empty for \"#{image}\" on line #{rule.line}"
         return 'failed'
+  return 'ok'
 
 # The exec form is parsed as a JSON array, which means that you must use
 # double-quotes (") around words not single-quotes (').
 # Reports: ERROR
 exports.json_array_format = (rules) ->
   for i in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
-    rule = getAll(i, rules)
+    rule = this.getAll(i, rules)
     for r in rule
       for argument in r.arguments
         if argument.match /\[.*'.*\]/
           utils.log 'ERROR', "Arguments to #{i} in exec for must not contain single quotes on line #{r.line}"
           return 'failed'
+  return 'ok'
 
 # Ensure the exec form contains a balanced number of double quotes.
 # Reports: ERROR
 exports.json_array_even_quotes = (rules) ->
   for i in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
-    rule = getAll(i, rules)
+    rule = this.getAll(i, rules)
     for r in rule
       # First turn all the arguments into a single string so that we have the
       # full overview of the arguments which we then split on \". If the number
@@ -74,12 +77,13 @@ exports.json_array_even_quotes = (rules) ->
       unless (quotes.length) % 2
         utils.log 'ERROR', "Odd number of double quotes on line #{r.line}"
         return 'failed'
+  return 'ok'
 
 # Although ADD and COPY are functionally similar, generally speaking, COPY is preferred.
 # The only/best use for ADD is to add-and-extract archives to an image.
 # Reports: WARN
 exports.add = (rules) ->
-  add = getAll('ADD', rules)
+  add = this.getAll('ADD', rules)
   if add.length > 0
     lines = []
     for rule in add
@@ -90,55 +94,61 @@ exports.add = (rules) ->
     if lines.length > 0
       utils.log 'WARN', "ADD instruction used instead of COPY on line #{lines.join ', '}"
       return 'failed'
+  return 'ok'
 
 # There can only be one CMD/ENTRYPOINT instruction in a Dockerfile.
 # If you list more than one CMD then only the last CMD will take effect.
 # Reports: ERROR
 exports.multiple_entries = (rules) ->
   for e in [ 'CMD', 'ENTRYPOINT' ]
-    rule = getAll(e, rules)
+    rule = this.getAll(e, rules)
     if rule.length > 1
       utils.log 'ERROR', "Multiple #{e} instructions found, only line #{rule[rule.length-1].line} will take effect"
       return 'failed'
+  return 'ok'
 
 # You should avoid installing or using sudo since it has unpredictable TTY and
 # signal-forwarding behavior that can cause more more problems than it solves
 # Reports: WARN
 exports.sudo = (rules) ->
-  run = getAll('RUN', rules)
+  run = this.getAll('RUN', rules)
   for rule in run
     for argument in rule.arguments
       if argument.match /sudo/
         utils.log 'WARN', "sudo(8) usage found on line #{rule.line} which is discouraged"
         return 'failed'
+  return 'ok'
 
 # For clarity and reliability, you should always use absolute paths for your WORKDIR.
 # Reports: ERROR
 exports.absolute_workdir = (rules) ->
-  workdir = getAll('WORKDIR', rules)
+  workdir = this.getAll('WORKDIR', rules)
   for rule in workdir
     unless path.normalize(rule.arguments[0]) is path.resolve(rule.arguments[0])
       utils.log 'ERROR', "WORKDIR path #{rule.arguments} must be absolute on line #{rule.line}"
       return 'failed'
+  return 'ok'
 
 # Be careful when putting ADD or COPY in ONBUILD.
 # Reports: WARN
 exports.onbuild_copyadd = (rules) ->
-  onbuild = getAll('ONBUILD', rules)
+  onbuild = this.getAll('ONBUILD', rules)
   for rule in onbuild
     for argument in rule.arguments
       if argument.match /ADD|COPY/
         utils.log 'WARN', "It is advised not to use ADD or COPY for ONBUILD on line #{rule.line}"
         return 'failed'
+  return 'ok'
 
 # Chaining ONBUILD instructions using ONBUILD ONBUILD isn't allowed.
 # The ONBUILD instruction may not trigger FROM or MAINTAINER instructions.
 # Reports: ERROR
 exports.onbuild_disallowed = (rules) ->
-  onbuild = getAll('ONBUILD', rules)
+  onbuild = this.getAll('ONBUILD', rules)
   for rule in onbuild
     for argument in rule.arguments
       chained_instruction = argument.split(' ')[0]
       if chained_instruction.match(/ONBUILD|FROM|MAINTAINER/)
         utils.log 'ERROR', "ONBUILD may not be chained with #{chained_instruction} on line #{rule.line}"
         return 'failed'
+  return 'ok'
