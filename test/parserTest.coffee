@@ -6,6 +6,9 @@ describe "getInstruction", ->
   it "should return the first word from a string", ->
     parser.getInstruction("FROM cargos:latest").should.equal "FROM"
 
+  it "should return the first word from a string with hard tabs", ->
+    parser.getInstruction("MAINTAINER	cargos:latest").should.equal "MAINTAINER"
+
   it "should return 'comment' for lines starting with '#'", ->
     parser.getInstruction('# Apology accepted, Captain Needa').should.equal 'comment'
 
