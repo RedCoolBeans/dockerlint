@@ -1,4 +1,6 @@
-utils = require '../src/utils.coffee'
+u    = require '../src/utils.coffee'
+chai = require 'chai'
+chai.should()
 
 describe "beginsWith", ->
   it "should return true if the argument matches the first character", ->
@@ -16,7 +18,7 @@ describe "endsWith", ->
 
 describe "notEmpty", ->
   it "should return false if string is empty", ->
-    utils.notEmpty('').should.equal false
+    u.notEmpty('').should.equal false
 
   it "should return true if string is not empty", ->
-    utils.notEmpty('Jabba').should.equal true
+    u.notEmpty('Jabba').should.equal true
