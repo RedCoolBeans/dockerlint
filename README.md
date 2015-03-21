@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/RedCoolBeans/dockerlint.svg?branch=master)](https://travis-ci.org/RedCoolBeans/dockerlint)
+
 # Dockerlint
 
 Linting tool for Dockerfiles based on recommendations from
