@@ -6,7 +6,7 @@ utils  = require "#{__dirname}/utils"
 
 usage = ->
   console.log "Dockerlint #{meta["version"]}\n\n
-  \tusage: dockerlint [-h] [-dp] -f Dockerfile"
+  \tusage: dockerlint [-h] [-dp] [-f Dockerfile]"
   process.exit 0
 
 report = (dockerfile, ok) ->
@@ -21,11 +21,9 @@ exports.run = (args) ->
   if args.help
     do usage
 
-  # Save the filename from the first of the unbound arguments.
-  unless args.file?
-    utils.log 'FATAL', 'No Dockerfile specified with -f'
-  else
-    dockerfile = args.file
+  # If no file is explicitly passed with -f, try the first
+  # unbound argument and fallback to 'Dockerfile'
+  dockerfile = args.file || args._[0] || 'Dockerfile'
 
   unless fs.existsSync dockerfile
     utils.log "FATAL", "Cannot open #{dockerfile}."

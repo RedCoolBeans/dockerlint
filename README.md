@@ -15,7 +15,7 @@ With [npm](https://npmjs.org/) just do:
 
 Once installed it's as easy as:
 
-    dockerlint -f Dockerfile
+    dockerlint Dockerfile
 
 Which will parse the file and notify you about any actual errors (such an
 omitted tag when `:` is set), and warn you about common pitfalls or bad idiom
