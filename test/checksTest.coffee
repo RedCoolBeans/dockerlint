@@ -111,3 +111,13 @@ describe "onbuild_disallowed", ->
   for cmd in [ 'FROM', 'ONBUILD', 'MAINTAINER' ]
     it "should fail when #{cmd} is used with ONBUILD", ->
       c.onbuild_disallowed([ {line: 1, instruction: 'ONBUILD', arguments: [cmd]} ]).should.be.equal 'failed'
+
+describe "label_no_empty_value", ->
+  it "should fail when LABEL expects a value and it's not set", ->
+    c.label_no_empty_value([ {line: 1, instruction: 'LABEL', arguments: ['key=']} ]).should.be.equal 'failed'
+
+  it "should pass when LABEL is a key and no value is expected", ->
+    c.label_no_empty_value([ {line: 1, instruction: 'LABEL', arguments: ['key']} ]).should.be.equal 'ok'
+
+  it "should pass when LABEL is a key=value", ->
+    c.label_no_empty_value([ {line: 1, instruction: 'LABEL', arguments: ['key=value']} ]).should.be.equal 'ok'

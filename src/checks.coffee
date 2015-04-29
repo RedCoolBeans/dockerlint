@@ -13,6 +13,7 @@ exports.all = [
   'absolute_workdir',
   'onbuild_copyadd',
   'onbuild_disallowed',
+  'label_no_empty_value'
 ]
 
 Array::filter = (func) -> x for x in @ when func(x)
@@ -166,4 +167,17 @@ exports.onbuild_disallowed = (rules) ->
       if chained_instruction.match(/ONBUILD|FROM|MAINTAINER/)
         utils.log 'ERROR', "ONBUILD may not be chained with #{chained_instruction} on line #{rule.line}"
         return 'failed'
+  return 'ok'
+
+# LABEL instructions are a key-value pair, of which the value may be ommitted
+# iff there is no equal sign.
+# Reports: ERROR
+exports.label_no_empty_value = (rules) ->
+  label = this.getAll('LABEL', rules)
+  for rule in label
+    for argument in rule.arguments
+      for pair in argument.split(' ')
+        if pair.slice(-1) == '='
+          utils.log 'ERROR', "LABEL requires value for line #{rule.line}"
+          return 'failed'
   return 'ok'
