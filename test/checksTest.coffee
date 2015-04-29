@@ -53,6 +53,10 @@ describe "no_empty_tag", ->
   it "should fail if no tag is set when one is expected", ->
     c.no_empty_tag([ {line: 1, instruction: 'FROM', arguments: ['cargos:']} ]).should.be.equal 'failed'
 
+describe "no_empty_digest", ->
+  it "should fail if no digest is set when one is expected", ->
+    c.no_empty_digest([ {line: 1, instruction: 'FROM', arguments: ['cargos@']} ]).should.be.equal 'failed'
+
 describe "json_array_format", ->
   for cmd in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
     it "should not fail on single quotes in #{cmd} non-exec form", ->

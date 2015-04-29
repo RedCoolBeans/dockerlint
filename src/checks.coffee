@@ -4,6 +4,7 @@ utils = require "#{__dirname}/utils"
 exports.all = [
   'from_first',
   'no_empty_tag',
+  'no_empty_digest',
   'json_array_format',
   'json_array_even_quotes',
   'add',
@@ -46,6 +47,20 @@ exports.no_empty_tag = (rules) ->
       [image, tag] = rule.arguments[0].split ':'
       unless utils.notEmpty tag
         utils.log 'ERROR', "Tag must not be empty for \"#{image}\" on line #{rule.line}"
+        return 'failed'
+  return 'ok'
+
+# If no digest is given to the FROM instruction an error will be returned when
+# a digest is expected.
+# Reports: ERROR if digest is empty
+exports.no_empty_digest = (rules) ->
+  from = this.getAll('FROM', rules)
+  for rule in from
+    # FROM lines can only have a single argument, so use [0].
+    if rule.arguments[0].match /@/
+      [image, digest] = rule.arguments[0].split '@'
+      unless utils.notEmpty digest
+        utils.log 'ERROR', "Digest must not be empty for \"#{image}\" on line #{rule.line}"
         return 'failed'
   return 'ok'
 
