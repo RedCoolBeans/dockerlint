@@ -3,7 +3,7 @@
 # Dockerlint
 
 Linting tool for Dockerfiles based on recommendations from
-[Dockerfile Reference](https://docs.docker.com/reference/builder/) and [Best practices for writing Dockerfiles](https://docs.docker.com/articles/dockerfile_best-practices/) as of Docker 1.5.
+[Dockerfile Reference](https://docs.docker.com/reference/builder/) and [Best practices for writing Dockerfiles](https://docs.docker.com/articles/dockerfile_best-practices/) as of Docker 1.6.
 
 ## Install
 

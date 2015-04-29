@@ -54,6 +54,7 @@ exports.no_empty_tag = (rules) ->
 # If no digest is given to the FROM instruction an error will be returned when
 # a digest is expected.
 # Reports: ERROR if digest is empty
+# Docker: 1.6
 exports.no_empty_digest = (rules) ->
   from = this.getAll('FROM', rules)
   for rule in from
@@ -172,6 +173,7 @@ exports.onbuild_disallowed = (rules) ->
 # LABEL instructions are a key-value pair, of which the value may be ommitted
 # iff there is no equal sign.
 # Reports: ERROR
+# Docker: 1.6
 exports.label_no_empty_value = (rules) ->
   label = this.getAll('LABEL', rules)
   for rule in label
