@@ -141,7 +141,7 @@ exports.sudo = (rules) ->
 exports.absolute_workdir = (rules) ->
   workdir = this.getAll('WORKDIR', rules)
   for rule in workdir
-    unless path.normalize(rule.arguments[0]) is path.resolve(rule.arguments[0])
+    unless path.isAbsolute(rule.arguments[0])
       utils.log 'ERROR', "WORKDIR path #{rule.arguments} must be absolute on line #{rule.line}"
       return 'failed'
   return 'ok'
