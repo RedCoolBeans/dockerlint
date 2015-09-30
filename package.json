@@ -7,7 +7,9 @@
     "dockerlint": "bin/dockerlint.js"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "build:win": "mingw32-make.exe js",
+    "build": "make js"
   },
   "author": {
     "name": "Jasper Lievisse Adriaanse",
