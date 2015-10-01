@@ -30,6 +30,14 @@ If you've cloned this repository, you can run `dockerlint` with:
     make deps # runs npm install
     make js && coffee bin/dockerlint.coffee
 
+If you're building on Windows, you'll have to set the path to your `make`:
+
+    npm config set dockerlint:make "mingw32-make.exe"
+
+or pass it to every invocation:
+
+    npm run build:win --dockerlint:make=mingw32-make.exe
+
 ## Roadmap
 
 - Add support for --version which checks against a specific Docker version
