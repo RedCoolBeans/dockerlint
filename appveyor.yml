@@ -27,8 +27,9 @@ install:
   - set PATH=%PATH%;C:\mingw64\bin
   - ps: Install-Product node $env:nodejs_version
   - npm install
-  - npm config set dockerlint:make "mingw32-make.exe"
+  - npm config set dockerlint:make "mingw64-make.exe"
   - ps: echo $ENV:Path
+  - ps: ls C:\mingw64\bin
 
 test_script:
   - node --version
