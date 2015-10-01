@@ -1,16 +1,14 @@
 environment:
   matrix:
   # node.js
-  - nodejs_version: "0.10"
-  - nodejs_version: "0.11"
   - nodejs_version: "0.12"    
   - nodejs_version: "4.0"
   # io.js
   - nodejs_version: "1.0"
+
+matrix:
   # Windows isn't fully supported by dockerlint, so allow failing all the tests.
   allow_failures:
-    - nodejs_version: "0.10"
-    - nodejs_version: "0.11"
     - nodejs_version: "0.12"
     - nodejs_version: "1.0"
     - nodejs_version: "4.0"      
