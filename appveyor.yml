@@ -26,7 +26,6 @@ install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
   - npm config set dockerlint:make "mingw32-make.exe"
-  - ps: echo $ENV:Path
 
 test_script:
   - node --version
