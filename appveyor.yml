@@ -15,21 +15,18 @@ matrix:
 
 install:
   - ps: |
-      if ($env:Build -eq "mingw") {
-        # Install MinGW.
-        $url  = "http://sourceforge.net/projects/mingw-w64/files/"
-        $url += "Toolchains%20targetting%20Win64/Personal%20Builds/"
-        $url += "mingw-builds/4.9.0/threads-win32/seh/"
-        $url += "x86_64-4.9.0-release-win32-seh-rt_v3-rev2.7z/download"
-        Invoke-WebRequest -UserAgent wget -Uri $url -OutFile mingw.7z
-        &7z x -oC:\ mingw.7z > $null
-      }
+      # Install MinGW.
+      $url  = "http://sourceforge.net/projects/mingw-w64/files/"
+      $url += "Toolchains%20targetting%20Win64/Personal%20Builds/"
+      $url += "mingw-builds/4.9.0/threads-win32/seh/"
+      $url += "x86_64-4.9.0-release-win32-seh-rt_v3-rev2.7z/download"
+      Invoke-WebRequest -UserAgent wget -Uri $url -OutFile mingw.7z
+      &7z x -oC:\ mingw.7z > $null
   - set PATH=%PATH%;C:\mingw64\bin
   - ps: Install-Product node $env:nodejs_version
   - npm install
-  - npm config set dockerlint:make "mingw64-make.exe"
+  - npm config set dockerlint:make "mingw32-make.exe"
   - ps: echo $ENV:Path
-  - ps: ls C:\mingw64\bin
 
 test_script:
   - node --version
