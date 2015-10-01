@@ -1,3 +1,4 @@
+os    = require 'os'
 path  = require 'path'
 utils = require "#{__dirname}/utils"
 
@@ -141,7 +142,17 @@ exports.sudo = (rules) ->
 exports.absolute_workdir = (rules) ->
   workdir = this.getAll('WORKDIR', rules)
   for rule in workdir
-    unless path.isAbsolute(rule.arguments[0])
+    # On *NIX we can assume that normalize() and resolve() return the same value
+    # for absolute paths. This allows us to keep working on Node < 0.12.0 where
+    # path.isAbsolute() is not available.
+    # For the Windows case the assumption doesn't hold and therefore we require
+    # the use of path.isAbsolute().
+    if os.platform() is 'win32'
+      absolute = path.isAbsolute(rule.arguments[0])
+    else
+      absolute = path.normalize(rule.arguments[0]) is path.resolve(rule.arguments[0])
+
+    unless absolute
       utils.log 'ERROR', "WORKDIR path #{rule.arguments} must be absolute on line #{rule.line}"
       return 'failed'
   return 'ok'
