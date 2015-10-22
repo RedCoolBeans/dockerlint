@@ -24,6 +24,42 @@ such as the common use case of `ADD`.
 
 In order to treat warnings as errors, use the `-p` flag.
 
+## Docker image
+
+Alternatively there is a [Docker image](https://hub.docker.com/r/redcoolbeans/dockerlint) available.
+
+This image provides a quick and easy way to validate your Dockerfiles, without
+having to install Node.JS and the dockerlint dependencies on your system.
+
+First fetch the image from the [Docker Hub](https://hub.docker.com/):
+
+    docker pull redcoolbeans/dockerlint
+
+You can either run it directly, or use [docker-compose](https://www.docker.com/docker-compose).
+
+### docker run
+
+For a quick one-off validation:
+
+    docker run -it --rm -v "$PWD/Dockerfile":/Dockerfile redcoolbeans/dockerlint
+
+### docker-compose
+
+For docker-compose use a `docker-compose.yml` such as the following:
+
+    ---
+      dockerlint:
+        image: redcoolbeans/dockerlint
+        volumes:
+          - ./Dockerfile:/Dockerfile
+
+Then simply run:
+
+    docker-compose up dockerlint
+
+This will validate the `Dockerfile` in your current directory.
+
+
 ### Running from a git clone
 
 If you've cloned this repository, you can run `dockerlint` with:
