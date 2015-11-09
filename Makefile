@@ -8,7 +8,7 @@ deps:
 lint:
 	coffeelint src
 
-js:
+js: deps
 	coffee -c bin/dockerlint.coffee
 	coffee -o lib -c src
 	# Insert shebang so the resulting script runs standalone
