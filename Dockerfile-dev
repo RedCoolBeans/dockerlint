@@ -1,0 +1,11 @@
+FROM node:4
+
+RUN git clone https://github.com/RedCoolBeans/dockerlint.git
+
+WORKDIR dockerlint
+
+RUN npm install -g coffee-script && \
+	make js && \
+	npm install -g
+
+ENTRYPOINT ["dockerlint", "-f", "/Dockerfile"]
