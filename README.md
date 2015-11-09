@@ -41,7 +41,7 @@ You can either run it directly, or use [docker-compose](https://www.docker.com/d
 
 For a quick one-off validation:
 
-    docker run -it --rm -v "$PWD/Dockerfile":/Dockerfile redcoolbeans/dockerlint
+    docker run -it --rm -v "$PWD/Dockerfile":/Dockerfile:ro redcoolbeans/dockerlint
 
 ### docker-compose
 
