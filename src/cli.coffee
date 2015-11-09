@@ -28,6 +28,9 @@ exports.run = (args) ->
   unless fs.existsSync dockerfile
     utils.log "FATAL", "Cannot open #{dockerfile}."
 
+  if not fs.lstatSync(dockerfile).isFile()
+    utils.log "FATAL", "#{dockerfile} is not a file."
+
   rules = parser.parser(dockerfile)
 
   if args.debug
