@@ -1,3 +1,4 @@
+[![NPM](https://nodei.co/npm/dockerlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/dockerlint/)
 [![Build Status](https://travis-ci.org/RedCoolBeans/dockerlint.svg?branch=master)](https://travis-ci.org/RedCoolBeans/dockerlint)
 [![Build status](https://ci.appveyor.com/api/projects/status/bwvl5wexs90wspyg?svg=true)](https://ci.appveyor.com/project/jasperla/dockerlint)
 
