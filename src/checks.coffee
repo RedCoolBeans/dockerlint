@@ -7,6 +7,7 @@ exports.all = [
   'no_empty_tag',
   'no_empty_digest',
   'json_array_format',
+  'recommended_exec_form',
   'json_array_even_quotes',
   'add',
   'multiple_entries',
@@ -94,6 +95,20 @@ exports.json_array_even_quotes = (rules) ->
       quotes = r.arguments.join(' ').split('"')
       unless (quotes.length) % 2
         utils.log 'ERROR', "Odd number of double quotes on line #{r.line}"
+        return 'failed'
+  return 'ok'
+
+# Using the exec form is recommended for certain instructions
+# Reports: WARN
+exports.recommended_exec_form = (rules) ->
+  for i in [ 'CMD', 'ENTRYPOINT' ]
+    rule = this.getAll(i, rules)
+    for r in rule
+      lbracket = r.arguments[0].match(/\[/g)
+      rbracket = r.arguments[0].match(/\]/g)
+
+      if !lbracket? || !rbracket?
+        utils.log 'WARN', "Recommended exec/array form not used on line #{r.line}"
         return 'failed'
   return 'ok'
 

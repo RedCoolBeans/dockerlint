@@ -74,6 +74,12 @@ describe "json_array_even_quotes", ->
     it "should fail when there are an unbalanced number of quotes in #{cmd} exec form", ->
       c.json_array_even_quotes(r).should.be.equal 'failed'
 
+describe "recommended_exec_form", ->
+  for cmd in [ 'CMD', 'ENTRYPOINT' ]
+    r = [ {line: 1, instruction: cmd, arguments: ["/entrypoint.sh"]} ]
+    it "should warn when not using exec form for #{cmd}", ->
+      c.recommended_exec_form(r).should.be.equal 'failed'
+
 describe "add", ->
   it "should warn when ADD it used", ->
     c.add([ {line: 1, instruction: 'ADD', arguments: ['/config.json /']} ]).should.be.equal 'failed'
