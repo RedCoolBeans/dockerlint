@@ -9,6 +9,7 @@ exports.all = [
   'json_array_format',
   'recommended_exec_form',
   'json_array_even_quotes',
+  'json_array_brackets',
   'add',
   'multiple_entries',
   'sudo',
@@ -95,6 +96,36 @@ exports.json_array_even_quotes = (rules) ->
       quotes = r.arguments.join(' ').split('"')
       unless (quotes.length) % 2
         utils.log 'ERROR', "Odd number of double quotes on line #{r.line}"
+        return 'failed'
+  return 'ok'
+
+# Ensure the exec form contains one opening and one closing square bracket.
+# Reports: ERROR
+exports.json_array_brackets = (rules) ->
+  for i in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
+    rule = this.getAll(i, rules)
+    for r in rule
+      # First make sure we're actually dealing with the exec form
+      unless r.arguments[0].match(/\[|\]/g)
+        continue
+
+      # First check if there is only one of each to begin with (ignore position).
+      lbracket = r.arguments[0].match(/\[/g)
+      if lbracket? && lbracket.length > 1
+        utils.log 'ERROR', "Multiple opening brackets found on line #{r.line}"
+        return 'failed'
+
+      rbracket = r.arguments[0].match(/\]/g)
+      if rbracket? && rbracket.length > 1
+        utils.log 'ERROR', "Multiple closing brackets found on line #{r.line}"
+        return 'failed'
+
+      # And finally verify the bracket's position
+      unless r.arguments[0].match(/^\[/)
+        utils.log 'ERROR', "No opening bracket found on line #{r.line}"
+        return 'failed'
+      unless r.arguments[0].match(/\]$/)
+        utils.log 'ERROR', "No closing bracket found on line #{r.line}"
         return 'failed'
   return 'ok'
 

@@ -74,6 +74,18 @@ describe "json_array_even_quotes", ->
     it "should fail when there are an unbalanced number of quotes in #{cmd} exec form", ->
       c.json_array_even_quotes(r).should.be.equal 'failed'
 
+describe "json_array_brackets", ->
+  for cmd in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
+    it "should not act on non-exec form arguments for #{cmd}", ->
+      c.json_array_brackets([ {line: 1, instruction: cmd, arguments: ['"foo"'] }]).should.be.equal 'ok'
+    for test in [
+      {desc: "are multiple closing brackets", test: '[["foo"]'},
+      {desc: "are multiple opening brackets", test: '["bar"]]'},
+      {desc: "is no opening bracket", test: '"baz"]'},
+      {desc: "is no closing bracket", test: '["quux"'}]
+      it "should fail if #{test.desc} for #{cmd}", ->
+        c.json_array_brackets([ {line: 1, instruction: cmd, arguments: [test.test] }]).should.be.equal 'failed'
+
 describe "recommended_exec_form", ->
   for cmd in [ 'CMD', 'ENTRYPOINT' ]
     r = [ {line: 1, instruction: cmd, arguments: ["/entrypoint.sh"]} ]
