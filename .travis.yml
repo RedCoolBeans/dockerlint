@@ -1,11 +1,8 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "iojs-v2.0"
   - "0.10"
   - "0.11"
   - "0.12"
   - "4"
 os:
   - linux
-
