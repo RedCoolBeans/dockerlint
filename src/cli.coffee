@@ -37,6 +37,9 @@ exports.run = (args) ->
 
   rules = parser.parser(dockerfile)
 
+  if rules.length == 0
+	  utils.log "FATAL", "#{dockerfile} does not contain any instructions"
+
   if args.debug
     utils.log 'DEBUG', rules
 
