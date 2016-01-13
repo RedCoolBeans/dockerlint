@@ -25,6 +25,10 @@ exports.run = (args) ->
   # unbound argument and fallback to 'Dockerfile'
   dockerfile = args.file || args._[0] || 'Dockerfile'
 
+  # Ensure that 'dockerfile' is a String; if the filename happens to be
+  # an integer (e.g. '1'), lstat() and other cannot handle it.
+  dockerfile = dockerfile.toString()
+
   unless fs.existsSync dockerfile
     utils.log "FATAL", "Cannot open #{dockerfile}."
 
