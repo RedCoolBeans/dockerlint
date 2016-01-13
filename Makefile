@@ -25,7 +25,8 @@ dist: js
 	npm pack
 
 tag:
-	git tag -a "v`cat package.json| jsawk  'return this.version'`" -m `cat package.json| jsawk  'return this.version'`
+	git tag -a "v`cat package.json| jsawk  'return this.version'`" \
+		-m `cat package.json| jsawk  'return this.version'`
 
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha \
