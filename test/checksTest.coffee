@@ -68,6 +68,9 @@ describe "json_array_format", ->
     it "should not fail when double quotes are used in #{cmd} exec form", ->
       c.json_array_format([ {line: 1, instruction: cmd, arguments: ['["/root"]']} ]).should.be.equal 'ok'
 
+    it "should not fail on arguments themselves having single quotes in #{cmd} exec form", ->
+      c.json_array_format([ {line: 1, instruction: cmd, arguments: ['["\'$HOME\'"]']} ]).should.be.equal 'ok'
+
 describe "json_array_even_quotes", ->
   for cmd in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
     r = [ {line: 1, instruction: cmd, arguments: ['"""']} ]
