@@ -7,13 +7,14 @@
     "dockerlint": "bin/dockerlint.js"
   },
   "config": {
-    "make": "make"
+    "make": "make",
+    "win32make": "mingw32-make.exe"
   },
   "scripts": {
     "build": "make js",
     "test": "make test",
-    "build:win": "%npm_package_config_make% js",
-    "test:win": "%npm_package_config_make% test"
+    "build:win": "%npm_package_config_winm32ake% js",
+    "test:win": "%npm_package_config_win32make% test"
   },
   "author": {
     "name": "Jasper Lievisse Adriaanse",
