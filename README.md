@@ -70,11 +70,11 @@ If you've cloned this repository, you can run `dockerlint` with:
 
 If you're building on Windows, you'll have to set the path to your `make`:
 
-    npm config set dockerlint:make "mingw32-make.exe"
+    npm config set dockerlint:winmake "mingw32-make.exe"
 
 or pass it to every invocation:
 
-    npm run build:win --dockerlint:make=mingw32-make.exe
+    npm run build:win --dockerlint:winmake=mingw32-make.exe
 
 ## Roadmap
 

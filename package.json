@@ -8,7 +8,7 @@
   },
   "config": {
     "make": "make",
-    "win32make": "mingw32-make.exe"
+    "winmake": "mingw32-make.exe"
   },
   "scripts": {
     "build": "make js",
