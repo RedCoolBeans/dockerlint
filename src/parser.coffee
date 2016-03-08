@@ -31,7 +31,7 @@ exports.parser = (dockerfile) ->
     rule   = []
 
     try
-      data = fs.readFileSync(dockerfile).toString().split '\n'
+      data = fs.readFileSync(dockerfile).toString().split /\r?\n/
     catch e
       return []
 
