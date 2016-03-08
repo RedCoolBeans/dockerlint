@@ -82,7 +82,6 @@ exports.json_array_format = (rules) ->
         if argument.match /\[.*\]/
           # Break the literal array into it's logical components
           for arg in argument.split ','
-            utils.log 'DEBUG', "Arg: #{arg}"
             if not arg.trim().match /^\[?\".*\"\]?$/
               utils.log 'ERROR', errmsg
               return 'failed'
