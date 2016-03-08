@@ -6,10 +6,10 @@ exports.all = [
   'from_first',
   'no_empty_tag',
   'no_empty_digest',
+  'json_array_brackets',
+  'json_array_even_quotes',
   'json_array_format',
   'recommended_exec_form',
-  'json_array_even_quotes',
-  'json_array_brackets',
   'add',
   'multiple_entries',
   'sudo',
@@ -76,10 +76,20 @@ exports.json_array_format = (rules) ->
   for i in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
     rule = this.getAll(i, rules)
     for r in rule
+      errmsg = "Arguments to #{i} in exec for must not contain single quotes on line #{r.line}"
       for argument in r.arguments
-        if argument.match /\[.*'.*\]/
-          utils.log 'ERROR', "Arguments to #{i} in exec for must not contain single quotes on line #{r.line}"
-          return 'failed'
+        # Check if we're dealing with Array notation
+        if argument.match /\[.*\]/
+          # Break the literal array into it's logical components
+          for arg in argument.split ','
+            utils.log 'DEBUG', "Arg: #{arg}"
+            if not arg.trim().match /^\[?\".*\"\]?$/
+              utils.log 'ERROR', errmsg
+              return 'failed'
+        else
+          if argument.match /\[.*'.*\]/
+            utils.log 'ERROR', errmsg
+            return 'failed'
   return 'ok'
 
 # Ensure the exec form contains a balanced number of double quotes.
