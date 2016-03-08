@@ -1,6 +1,6 @@
 {
   "name": "dockerlint",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Linting for Dockerfiles",
   "main": "bin/dockerlint",
   "bin": {
@@ -13,8 +13,8 @@
   "scripts": {
     "build": "make js",
     "test": "make test",
-    "build:win": "%npm_package_config_winm32ake% js",
-    "test:win": "%npm_package_config_win32make% test"
+    "build:win": "%npm_package_config_winmake% js",
+    "test:win": "%npm_package_config_winmake% test"
   },
   "author": {
     "name": "Jasper Lievisse Adriaanse",
