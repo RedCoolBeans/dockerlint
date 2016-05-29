@@ -22,3 +22,10 @@ describe "notEmpty", ->
 
   it "should return true if string is not empty", ->
     u.notEmpty('Jabba').should.equal true
+
+describe "isArray", ->
+  it "should return true if object is an array", ->
+    u.isArray([]).should.equal true
+
+  it "should return false if object is not an array", ->
+    u.isArray('Jabba').should.equal false

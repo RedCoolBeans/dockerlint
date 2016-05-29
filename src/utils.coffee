@@ -28,3 +28,8 @@ exports.log = (level, msg) ->
     else
       process.stdout.write "#{sty.blue 'DEBUG'}:"
       console.dir msg
+
+# Return true if object is an array
+# From http://stackoverflow.com/a/16608045/4126114
+exports.isArray = (a) -> (!!a) && (a.constructor is Array)
+
