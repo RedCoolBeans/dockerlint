@@ -63,7 +63,20 @@ This will validate the `Dockerfile` in your current directory.
 
 ### Running from a git clone
 
-If you've cloned this repository, you can run `dockerlint` with:
+If you've cloned this repository, you will need the following prerequisites:
+1. make
+2. [npm](https://www.npmjs.com/)
+3. [coffee](http://coffeescript.org/)
+
+Installing prerequisites on ubuntu:
+
+    sudo apt-get update
+    sudo apt-get install make
+    sudo apt-get install npm
+    sudo ln -s /usr/bin/nodejs /usr/bin/node
+    sudo npm install -g coffee-script
+
+You can run `dockerlint` with:
 
     make deps # runs npm install
     make js && coffee bin/dockerlint.coffee
