@@ -3,3 +3,4 @@ bin/dockerlint.coffee
 Dockerfile
 Makefile
 Vagrantfile
+.github
