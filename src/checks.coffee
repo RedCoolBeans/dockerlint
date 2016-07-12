@@ -114,29 +114,25 @@ exports.json_array_brackets = (rules) ->
   for i in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
     rule = this.getAll(i, rules)
     for r in rule
-      # First make sure we're actually dealing with the exec form
-      unless r.arguments[0].match(/\[|\]/g)
+      # First make sure we're actually dealing with the exec form (not ignoring position)
+      unless r.arguments[0].match(/(^\s*\[)|(\]\s*$)/g)
         continue
-
-      # First check if there is only one of each to begin with (ignore position).
-      lbracket = r.arguments[0].match(/\[/g)
-      if lbracket? && lbracket.length > 1
-        utils.log 'ERROR', "Multiple opening brackets found on line #{r.line}"
+    
+      # Check if this is a valid JSON array
+      try 
+        # parse to JSON
+        arg2json = JSON.parse r.arguments[0]
+        # count number of entries in main array that are arrays
+        nArray = arg2json.filter (z) -> return utils.isArray(z)
+        # if there are array entries, then this should be alerted
+        if nArray.length > 0 
+          utils.log 'ERROR', "Nested array found on line #{r.line}"
+          return 'failed'
+  
+        return 'ok'
+      catch e
+        utils.log 'ERROR', "Invalid array on line #{r.line}"
         return 'failed'
-
-      rbracket = r.arguments[0].match(/\]/g)
-      if rbracket? && rbracket.length > 1
-        utils.log 'ERROR', "Multiple closing brackets found on line #{r.line}"
-        return 'failed'
-
-      # And finally verify the bracket's position
-      unless r.arguments[0].match(/^\[/)
-        utils.log 'ERROR', "No opening bracket found on line #{r.line}"
-        return 'failed'
-      unless r.arguments[0].match(/\]$/)
-        utils.log 'ERROR', "No closing bracket found on line #{r.line}"
-        return 'failed'
-  return 'ok'
 
 # Using the exec form is recommended for certain instructions
 # Reports: WARN

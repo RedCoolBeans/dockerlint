@@ -79,13 +79,23 @@ describe "json_array_even_quotes", ->
 
 describe "json_array_brackets", ->
   for cmd in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
-    it "should not act on non-exec form arguments for #{cmd}", ->
-      c.json_array_brackets([ {line: 1, instruction: cmd, arguments: ['"foo"'] }]).should.be.equal 'ok'
+    for arg in [ '"foo"', '"echo [foo]"' ]
+      it "should not act on non-exec form arguments for #{cmd} #{arg}", ->
+        c.json_array_brackets([ {line: 1, instruction: cmd, arguments: [arg] }]).should.be.equal 'ok'
+
+    for arg in [ '["foo"]', ' ["foo"]', '["foo"]  ', ' ["foo"]  ' ]
+      it "should allow spaces around non-exec form arguments for #{cmd} #{arg}", ->
+        c.json_array_brackets([ {line: 1, instruction: cmd, arguments: [arg] }]).should.be.equal 'ok'
+
     for test in [
       {desc: "are multiple closing brackets", test: '[["foo"]'},
       {desc: "are multiple opening brackets", test: '["bar"]]'},
       {desc: "is no opening bracket", test: '"baz"]'},
-      {desc: "is no closing bracket", test: '["quux"'}]
+      {desc: "is no closing bracket", test: '["quux"'},
+      {desc: "are multiple commas", test: '["foo",,]'},
+      {desc: "are nested arrays (1)", test: '["foo",[]]'},
+      {desc: "are nested arrays (2)", test: '["foo",["foo"]]'},
+    ]
       it "should fail if #{test.desc} for #{cmd}", ->
         c.json_array_brackets([ {line: 1, instruction: cmd, arguments: [test.test] }]).should.be.equal 'failed'
 
