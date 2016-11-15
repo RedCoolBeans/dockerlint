@@ -1,4 +1,4 @@
-FROM node:4-slim
+FROM node:4-alpine
 
 MAINTAINER Jasper Lievisse Adriaanse <jasper@redcoolbeans.com>
 
