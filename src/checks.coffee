@@ -76,7 +76,7 @@ exports.json_array_format = (rules) ->
   for i in [ 'CMD', 'ENTRYPOINT', 'RUN', 'VOLUME' ]
     rule = this.getAll(i, rules)
     for r in rule
-      errmsg = "Arguments to #{i} in exec for must not contain single quotes on line #{r.line}"
+      errmsg = "Arguments to #{i} in exec form must not contain single quotes on line #{r.line}"
       for argument in r.arguments
         # Check if we're dealing with Array notation
         if argument.match /\[.*\]/
