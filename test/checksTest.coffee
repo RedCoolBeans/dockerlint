@@ -126,6 +126,24 @@ describe "sudo", ->
   it "should warn when sudo is used", ->
     c.sudo([ {line: 1, instruction: 'RUN', arguments: ['sudo rm -rf /']} ]).should.be.equal 'failed'
 
+  it "should warn when sudo is used in absolute path form", ->
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['/usr/bin/sudo rm -rf /']} ]).should.be.equal 'failed'
+
+  it "should warn when sudo is used with preceding spaces/tabs", ->
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: [' 	  sudo rm -rf /']} ]).should.be.equal 'failed'
+
+  it "should warn when sudo is used after semicolon", ->
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['date; sudo rm -rf /']} ]).should.be.equal 'failed'
+
+  it "should warn when sudo is used at the end of line", ->
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['date; sudo']} ]).should.be.equal 'failed'
+
+  it "should not warn when sudoer file is being used", ->
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['echo "jenkins ALL=(ALL) ALL" >> etc/sudoers']} ]).should.be.equal 'ok'
+
+  it "should not warn when sudo is not a verb in the sentence", ->
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['yum list installed | grep sudo']} ]).should.be.equal 'ok'
+
 describe "absolute_workdir", ->
   it "should fail when WORKDIR uses a relative path", ->
     c.absolute_workdir([ {line: 1, instruction: 'WORKDIR', arguments: ['../']} ]).should.be.equal 'failed'
