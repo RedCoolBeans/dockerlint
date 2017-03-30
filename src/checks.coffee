@@ -183,7 +183,7 @@ exports.sudo = (rules) ->
   run = this.getAll('RUN', rules)
   for rule in run
     for argument in rule.arguments
-      if argument.match /sudo/
+      if argument.match /(^|.*;)\s*(\/?.*\/)?sudo(\s|$)/
         utils.log 'WARN', "sudo(8) usage found on line #{rule.line} which is discouraged"
         return 'failed'
   return 'ok'
