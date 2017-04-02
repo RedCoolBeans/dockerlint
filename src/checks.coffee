@@ -157,7 +157,10 @@ exports.add = (rules) ->
     lines = []
     for rule in add
       # If the source file is a recognized format (tar, gz, bz, xz), it's allowed
-      # usage of ADD.
+      # usage of ADD. Because image size matters, using ADD to fetch packages from
+      # remote URLs is strongly discouraged; you should use curl or wget instead.
+      # That way you can delete the files you no longer need after they've been
+      # extracted and you won't have to add another layer in your image.
       lines.push rule.line unless rule.arguments[0].match(/\.(tar|gz|bz2|xz)/)
 
     if lines.length > 0
