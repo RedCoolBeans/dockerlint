@@ -140,8 +140,9 @@ exports.recommended_exec_form = (rules) ->
   for i in [ 'CMD', 'ENTRYPOINT' ]
     rule = this.getAll(i, rules)
     for r in rule
-      lbracket = r.arguments[0].match(/\[/g)
-      rbracket = r.arguments[r.arguments.length-1].match(/\]/g)
+      nr = r.arguments.join(' ').split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/, -1)
+      lbracket = nr[0].match(/\[/g)
+      rbracket = nr[nr.length-1].match(/\]/g)
 
       if !lbracket? || !rbracket?
         utils.log 'WARN', "Recommended exec/array form not used on line #{r.line}"
