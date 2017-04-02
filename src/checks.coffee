@@ -117,18 +117,18 @@ exports.json_array_brackets = (rules) ->
       # First make sure we're actually dealing with the exec form (not ignoring position)
       unless r.arguments[0].match(/(^\s*\[)|(\]\s*$)/g)
         continue
-    
+
       # Check if this is a valid JSON array
-      try 
+      try
         # parse to JSON
-        arg2json = JSON.parse r.arguments[0]
+        arg2json = JSON.parse r.arguments.join(' ')
         # count number of entries in main array that are arrays
         nArray = arg2json.filter (z) -> return utils.isArray(z)
         # if there are array entries, then this should be alerted
-        if nArray.length > 0 
+        if nArray.length > 0
           utils.log 'ERROR', "Nested array found on line #{r.line}"
           return 'failed'
-  
+
         return 'ok'
       catch e
         utils.log 'ERROR', "Invalid array on line #{r.line}"
