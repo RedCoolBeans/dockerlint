@@ -2,6 +2,19 @@ os    = require 'os'
 path  = require 'path'
 utils = require "#{__dirname}/utils"
 
+args = require('subarg')(process.argv.slice(2), alias:
+  d: 'debug'
+  f: 'file'
+  h: 'help'
+  p: 'pedantic')
+
+if args.pedantic
+  exports.pedantic_ret = 'failed'
+  exports.pedantic_severity = 'ERROR'
+else
+  exports.pedantic_ret = 'warning'
+  exports.pedantic_severity = 'WARN'
+
 exports.all = [
   'from_first',
   'no_empty_tag',
@@ -148,8 +161,8 @@ exports.recommended_exec_form = (rules) ->
       rbracket = nr[nr.length-1].match(/\]/g)
 
       if !lbracket? || !rbracket?
-        utils.log 'WARN', "Recommended exec/array form not used on line #{r.line}"
-        return 'failed'
+        utils.log exports.pedantic_severity, "Recommended exec/array form not used on line #{r.line}"
+        return exports.pedantic_ret
   return 'ok'
 
 # Although ADD and COPY are functionally similar, generally speaking, COPY is preferred.
@@ -168,8 +181,8 @@ exports.add = (rules) ->
       lines.push rule.line unless rule.arguments[0].match(/\.(tar|gz|bz2|xz)/)
 
     if lines.length > 0
-      utils.log 'WARN', "ADD instruction used instead of COPY on line #{lines.join ', '}"
-      return 'failed'
+      utils.log exports.pedantic_severity, "ADD instruction used instead of COPY on line #{lines.join ', '}"
+      return exports.pedantic_ret
   return 'ok'
 
 # There can only be one CMD/ENTRYPOINT instruction in a Dockerfile.
@@ -191,8 +204,8 @@ exports.sudo = (rules) ->
   for rule in run
     for argument in rule.arguments
       if argument.match /(^|.*;)\s*(\/?.*\/)?sudo(\s|$)/
-        utils.log 'WARN', "sudo(8) usage found on line #{rule.line} which is discouraged"
-        return 'failed'
+        utils.log exports.pedantic_severity, "sudo(8) usage found on line #{rule.line} which is discouraged"
+        return exports.pedantic_ret
   return 'ok'
 
 exports.env = (rules) ->
@@ -252,8 +265,8 @@ exports.onbuild_copyadd = (rules) ->
   for rule in onbuild
     for argument in rule.arguments
       if argument.match /ADD|COPY/
-        utils.log 'WARN', "It is advised not to use ADD or COPY for ONBUILD on line #{rule.line}"
-        return 'failed'
+        utils.log exports.pedantic_severity, "It is advised not to use ADD or COPY for ONBUILD on line #{rule.line}"
+        return exports.pedantic_ret
   return 'ok'
 
 # Chaining ONBUILD instructions using ONBUILD ONBUILD isn't allowed.

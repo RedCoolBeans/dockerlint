@@ -1,8 +1,3 @@
-args = require('subarg')(process.argv.slice(2), alias:
-  d: 'debug'
-  f: 'file'
-  h: 'help'
-  p: 'pedantic')
 sty  = require 'sty'
 
 String::beginsWith ?= (s) -> @[...s.length] is s
@@ -21,8 +16,7 @@ exports.log = (level, msg) ->
     when 'ERROR', 4
       console.error "#{sty.red 'ERROR'}: #{msg}"
     when 'WARN', 3
-      console.warn "#{sty.red 'WARN'}:  #{msg}"
-      process.exit 1 if args.pedantic
+      console.warn "#{sty.yellow 'WARN'}:  #{msg}"
     when 'INFO', 2
       console.log "#{sty.green 'INFO'}: #{msg}"
     else
