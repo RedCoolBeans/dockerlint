@@ -103,11 +103,11 @@ describe "recommended_exec_form", ->
   for cmd in [ 'CMD', 'ENTRYPOINT' ]
     r = [ {line: 1, instruction: cmd, arguments: ["/entrypoint.sh"]} ]
     it "should warn when not using exec form for #{cmd}", ->
-      c.recommended_exec_form(r).should.be.equal 'failed'
+      c.recommended_exec_form(r).should.be.equal 'warning'
 
 describe "add", ->
   it "should warn when ADD it used", ->
-    c.add([ {line: 1, instruction: 'ADD', arguments: ['/config.json /']} ]).should.be.equal 'failed'
+    c.add([ {line: 1, instruction: 'ADD', arguments: ['/config.json /']} ]).should.be.equal 'warning'
 
   for archive in [ 'tar', 'tar.gz', 'gz', 'bz2', 'xz', 'tar.xz' ]
     it "should not fail when ADD is used with an #{archive} archive", ->
@@ -124,19 +124,19 @@ describe "multiple_entries", ->
 
 describe "sudo", ->
   it "should warn when sudo is used", ->
-    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['sudo rm -rf /']} ]).should.be.equal 'failed'
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['sudo rm -rf /']} ]).should.be.equal 'warning'
 
   it "should warn when sudo is used in absolute path form", ->
-    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['/usr/bin/sudo rm -rf /']} ]).should.be.equal 'failed'
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['/usr/bin/sudo rm -rf /']} ]).should.be.equal 'warning'
 
   it "should warn when sudo is used with preceding spaces/tabs", ->
-    c.sudo([ {line: 1, instruction: 'RUN', arguments: [' 	  sudo rm -rf /']} ]).should.be.equal 'failed'
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: [' 	  sudo rm -rf /']} ]).should.be.equal 'warning'
 
   it "should warn when sudo is used after semicolon", ->
-    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['date; sudo rm -rf /']} ]).should.be.equal 'failed'
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['date; sudo rm -rf /']} ]).should.be.equal 'warning'
 
   it "should warn when sudo is used at the end of line", ->
-    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['date; sudo']} ]).should.be.equal 'failed'
+    c.sudo([ {line: 1, instruction: 'RUN', arguments: ['date; sudo']} ]).should.be.equal 'warning'
 
   it "should not warn when sudoer file is being used", ->
     c.sudo([ {line: 1, instruction: 'RUN', arguments: ['echo "jenkins ALL=(ALL) ALL" >> etc/sudoers']} ]).should.be.equal 'ok'
@@ -154,7 +154,7 @@ describe "absolute_workdir", ->
 describe "onbuild_copyadd", ->
   for cmd in [ 'ADD', 'COPY' ]
     it "should fail when #{cmd} is used with ONBUILD", ->
-      c.onbuild_copyadd([ {line: 1, instruction: 'ONBUILD', arguments: ["#{cmd} /file /"]} ]).should.be.equal 'failed'
+      c.onbuild_copyadd([ {line: 1, instruction: 'ONBUILD', arguments: ["#{cmd} /file /"]} ]).should.be.equal 'warning'
 
 describe "onbuild_disallowed", ->
   for cmd in [ 'FROM', 'ONBUILD', 'MAINTAINER' ]
