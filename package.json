@@ -1,6 +1,6 @@
 {
   "name": "dockerlint",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Linting for Dockerfiles",
   "main": "bin/dockerlint",
   "bin": {
@@ -17,8 +17,8 @@
     "test:win": "%npm_package_config_winmake% test"
   },
   "author": {
-    "name": "Jasper Lievisse Adriaanse",
-    "email": "jasper@redcoolbeans.com",
+    "name": "RedCoolBeans",
+    "email": "info@redcoolbeans.com",
     "url": "http://www.redcoolbeans.com"
   },
   "license": "MIT",
