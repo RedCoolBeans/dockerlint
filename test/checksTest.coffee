@@ -106,7 +106,7 @@ describe "recommended_exec_form", ->
       c.recommended_exec_form(r).should.be.equal 'warning'
 
 describe "add", ->
-  it "should warn when ADD it used", ->
+  it "should warn when ADD is used", ->
     c.add([ {line: 1, instruction: 'ADD', arguments: ['/config.json /']} ]).should.be.equal 'warning'
 
   for archive in [ 'tar', 'tar.gz', 'gz', 'bz2', 'xz', 'tar.xz' ]
