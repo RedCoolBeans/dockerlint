@@ -9,6 +9,7 @@ exports.all = [
   'json_array_brackets',
   'json_array_even_quotes',
   'json_array_format',
+  'env',
   'recommended_exec_form',
   'add',
   'multiple_entries',
@@ -18,6 +19,8 @@ exports.all = [
   'onbuild_disallowed',
   'label_no_empty_value'
 ]
+
+exports.env = []
 
 Array::filter = (func) -> x for x in @ when func(x)
 
@@ -192,12 +195,50 @@ exports.sudo = (rules) ->
         return 'failed'
   return 'ok'
 
+exports.env = (rules) ->
+  env = this.getAll('ENV', rules)
+  for rule in env
+    for argument in rule.arguments
+      eq_form = false
+      i = 0
+      for pair in argument.split(' ')
+        p = pair.split(/(\w+)=([^\s]+)/)
+        if i == 0
+          if p[1]
+            eq_form = true
+        if (!p[1] && eq_form) || (p[1] && !eq_form)
+          utils.log 'ERROR', "ENV cannot mix the two formats for declaring variables line #{rule.line}"
+          return 'failed'
+        i++
+        if p[1]
+          exports.env['$' + p[1]] = p[2]
+
+       if argument.match(/(\w+)=([^\s]+)/)
+         continue
+
+       env = argument.match(/^(\S+)\s(.*)/).slice(1)
+       if env[0] && env[1]
+         exports.env['$' + env[0]] = env[1]
+
+  return 'ok'
+
 # For clarity and reliability, you should always use absolute paths for your WORKDIR.
 # Reports: ERROR
 exports.absolute_workdir = (rules) ->
   workdir = this.getAll('WORKDIR', rules)
   for rule in workdir
-    absolute = path.isAbsolute(rule.arguments[0])
+    env = rule.arguments[0].match(/\$[\w]+/)
+
+    if exports.env[env]
+      rule.arguments[0] = rule.arguments[0].replace(env, exports.env[env])
+    else if env
+      utils.log 'ERROR', "WORKDIR path #{rule.arguments} contains undefined ENV variable on line #{rule.line}"
+      return 'failed'
+
+    if (typeof path.isAbsolute != "undefined")
+      absolute = path.isAbsolute(rule.arguments[0])
+    else
+      absolute = rule.arguments[0].charAt(0) == '/';
 
     unless absolute
       utils.log 'ERROR', "WORKDIR path #{rule.arguments} must be absolute on line #{rule.line}"
