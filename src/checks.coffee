@@ -141,7 +141,7 @@ exports.recommended_exec_form = (rules) ->
     rule = this.getAll(i, rules)
     for r in rule
       lbracket = r.arguments[0].match(/\[/g)
-      rbracket = r.arguments[0].match(/\]/g)
+      rbracket = r.arguments[r.arguments.length-1].match(/\]/g)
 
       if !lbracket? || !rbracket?
         utils.log 'WARN', "Recommended exec/array form not used on line #{r.line}"
