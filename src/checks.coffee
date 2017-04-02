@@ -82,7 +82,7 @@ exports.json_array_format = (rules) ->
       errmsg = "Arguments to #{i} in exec form must not contain single quotes on line #{r.line}"
       for argument in r.arguments
         # Check if we're dealing with Array notation
-        if argument.match /\[.*\]/
+        if argument.match /^\[.*\]/
           # Break the literal array into it's logical components
           for arg in argument.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/, -1)
             if not arg.trim().match /^\[?\".*\"\]?$/
