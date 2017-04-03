@@ -208,30 +208,28 @@ exports.sudo = (rules) ->
         return exports.pedantic_ret
   return 'ok'
 
+# Check ENV syntax and save the variables for further evaluation if needed.
+# Reports: ERROR
 exports.env = (rules) ->
   environs = this.getAll('ENV', rules)
   for rule in environs
     for argument in rule.arguments
-      eq_form = false
-      i = 0
-      for pair in argument.split(' ')
-        p = pair.split(/(\w+)=([^\s]+)/)
-        if i == 0
-          if p[1]
-            eq_form = true
-        if (!p[1] && eq_form) || (p[1] && !eq_form)
-          utils.log 'ERROR', "ENV cannot mix the two formats for declaring variables line #{rule.line}"
-          return 'failed'
-        i++
-        if p[1]
+      if argument.split(' ')[0].match(/(\w+)=([^\s]+)/)
+        for pair in argument.split(' ')
+          p = pair.split(/(\w+)=([^\s]+)/)
           exports.env['$' + p[1]] = p[2]
-
-       if argument.match(/(\w+)=([^\s]+)/)
-         continue
-
-       env = argument.match(/^(\S+)\s(.*)/).slice(1)
-       if env[0] && env[1]
-         exports.env['$' + env[0]] = env[1]
+      else
+        env = argument.match(/^(\S+)\s(.*)/)
+        if env
+          env = env.slice(1)
+        else
+          utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
+          return 'failed'
+        if env[0] && env[1]
+          exports.env['$' + env[0]] = env[1]
+        else
+          utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
+          return 'failed'
 
   return 'ok'
 
