@@ -209,8 +209,8 @@ exports.sudo = (rules) ->
   return 'ok'
 
 exports.env = (rules) ->
-  env = this.getAll('ENV', rules)
-  for rule in env
+  environs = this.getAll('ENV', rules)
+  for rule in environs
     for argument in rule.arguments
       eq_form = false
       i = 0
