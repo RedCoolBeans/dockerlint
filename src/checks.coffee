@@ -101,10 +101,6 @@ exports.json_array_format = (rules) ->
             if not arg.trim().match /^\[?(\s+)?\".*\"(\s+)?\]?$/
               utils.log 'ERROR', errmsg
               return 'failed'
-        else
-          if argument.match /\[.*'.*\]/
-            utils.log 'ERROR', errmsg
-            return 'failed'
   return 'ok'
 
 # Ensure the exec form contains a balanced number of double quotes.
