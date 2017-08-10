@@ -10,4 +10,5 @@ RUN npm install -g coffee-script \
  && npm install -g \
  && npm cache clean
 
-ENTRYPOINT ["dockerlint", "-f", "/Dockerfile"]
+ENTRYPOINT ["dockerlint"]
+ENTRYPOINT ["-f", "/Dockerfile"]

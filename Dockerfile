@@ -5,4 +5,5 @@ MAINTAINER Red Cool Beans <maintainer@redcoolbeans.com>
 RUN npm install -g dockerlint \
  && npm cache clean
 
-ENTRYPOINT ["dockerlint", "-f", "/Dockerfile"]
+ENTRYPOINT ["dockerlint"]
+CMD [ "-f", "/Dockerfile"]
