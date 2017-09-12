@@ -27,3 +27,10 @@ exports.log = (level, msg) ->
 # From http://stackoverflow.com/a/16608045/4126114
 exports.isArray = (a) -> (!!a) && (a.constructor is Array)
 
+# Merge multiple objects, last key wins
+exports.merge = (xs...) ->
+  if xs?.length > 0
+    exports.tap {}, (m) -> m[k] = v for k, v of x for x in xs
+
+# Invoke function with object, return object
+exports.tap = (o, fn) -> fn(o); o

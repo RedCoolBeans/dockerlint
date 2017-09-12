@@ -16,6 +16,7 @@ else
   exports.pedantic_severity = 'WARN'
 
 exports.all = [
+  'arg',
   'from_first',
   'no_empty_tag',
   'no_empty_digest',
@@ -30,9 +31,28 @@ exports.all = [
   'absolute_workdir',
   'onbuild_copyadd',
   'onbuild_disallowed',
-  'label_no_empty_value'
+  'label_no_empty_value',
+  'variable_use'
 ]
 
+# Match $VAR, ${VAR}, and ${VAR:-default}
+# FIXME: does not handle \$VAR escaping
+# Variable name 'VAR' is Group 1 or Group 2
+exports.varPattern = ///
+  (?:       # Don't capture, just match
+  \$        # Dollar sign to start the variable
+  (?:       # Don't capture, just group
+  ([\w]+)   # Match one or more word characters (greedy), this is the variable name like VAR
+  |         # Or
+  \{        # Match the starting brace for variables like ${VAR}
+  (\w+)     # Match one or more word characters (greedy), this is the variable name like VAR
+  .*?\}     # Match characters after variable name to handle ${VAR} and ${VAR:-default}
+  ))        # End the non-capturing groups
+///g        # Global match to find all variables in a string
+
+# Cache the ARG variables for lookup
+exports.arg = []
+# Cache the ENV variables for lookup
 exports.env = []
 
 Array::filter = (func) -> x for x in @ when func(x)
@@ -45,15 +65,62 @@ exports.getAll = (instruction, rules) ->
 exports.getAllExcept = (instruction, rules) ->
   rules.filter (r) -> r.instruction isnt instruction
 
-# FROM must be the first non-comment instruction in the Dockerfile
+# Return effective available variables from ARG and ENV
+exports.getAllVariables = (rules) ->
+  this.arg(rules)
+  this.env(rules)
+  # ENV overrides ARG https://docs.docker.com/engine/reference/builder/#using-arg-variables
+  utils.merge(exports.arg, exports.env)
+
+# Merge variables from rule (ARG, ENV) with provided object
+exports.mergeVariables = (o, rule) ->
+  for argument in rule.arguments
+    if argument.split(' ')[0].match(/(\w+)=([^\s]+)/)
+      for pair in argument.split(' ')
+        p = pair.split(/(\w+)=([^\s]+)/)
+        o[p[1]] = p[2]
+    else
+      env = argument.match(/^(\S+)\s(.*)/)
+      if env
+        env = env.slice(1)
+      else
+        return 'failed'
+      if env[0] && env[1]
+        o[env[0]] = env[1]
+      else
+        return 'failed'
+  return 'ok'
+
+# Check that all variables in a string are defined
+exports.variablesDefined = (vars, s) ->
+  while match = exports.varPattern.exec(s)
+    m = match[1] || match[2]
+    unless vars[m]
+      #utils.log 'DEBUG', "Undefined variable match #{match} within #{s}"
+      return 'failed'
+  return 'ok'
+
+# Replace all variables with values
+exports.variablesReplace = (vars, s) ->
+  s.replace exports.varPattern, (match, g1, g2, offset, str) ->
+    m = g1 || g2
+    if vars[m]
+      return str.replace(match,vars[m])
+    else
+      #utils.log 'DEBUG', "Undefined variable replacement #{match} within #{str}"
+      return str
+
+# FROM should be the first non-comment instruction in the Dockerfile
+# it may be preceeded by ARG
 # Reports: ERROR
 exports.from_first = (rules) ->
   non_comments = this.getAllExcept('comment', rules)
   first = non_comments[0]
 
   if first.instruction isnt 'FROM'
-    utils.log 'ERROR', "First instruction must be 'FROM', is: #{first.instruction}"
-    return 'failed'
+    unless first.instruction is 'ARG'
+      utils.log 'ERROR', "First instruction must be 'FROM', is: #{first.instruction}"
+      return 'failed'
   return 'ok'
 
 # If no tag is given to the FROM instruction, latest is assumed. If the used
@@ -145,6 +212,7 @@ exports.json_array_brackets = (rules) ->
       catch e
         utils.log 'ERROR', "Invalid array on line #{r.line}"
         return 'failed'
+  return 'ok'
 
 # Using the exec form is recommended for certain instructions
 # Reports: WARN
@@ -209,38 +277,39 @@ exports.sudo = (rules) ->
 exports.env = (rules) ->
   environs = this.getAll('ENV', rules)
   for rule in environs
-    for argument in rule.arguments
-      if argument.split(' ')[0].match(/(\w+)=([^\s]+)/)
-        for pair in argument.split(' ')
-          p = pair.split(/(\w+)=([^\s]+)/)
-          exports.env['$' + p[1]] = p[2]
-      else
-        env = argument.match(/^(\S+)\s(.*)/)
-        if env
-          env = env.slice(1)
-        else
-          utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
-          return 'failed'
-        if env[0] && env[1]
-          exports.env['$' + env[0]] = env[1]
-        else
-          utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
-          return 'failed'
+    unless exports.mergeVariables(exports.env, rule) is 'ok'
+      utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
+      return 'failed'
+  return 'ok'
 
+# Check ARG syntax and save the variables for further evaluation if needed.
+# Save pre-defined ARG variables
+# Reports: ERROR
+exports.arg = (rules) ->
+  for pre in ['HTTP_PROXY', 'http_proxy', 'HTTPS_PROXY', 'http_proxy', 'FTP_PROXY', 'ftp_proxy', 'NO_PROXY', 'no_proxy']
+    exports.arg[pre] = 'true'
+
+  args = this.getAll('ARG', rules)
+  for rule in args
+    unless exports.mergeVariables(exports.arg, rule) is 'ok'
+      utils.log 'ERROR', "ARG invalid format #{rule.arguments} on line #{rule.line}"
+      return 'failed'
   return 'ok'
 
 # For clarity and reliability, you should always use absolute paths for your WORKDIR.
 # Reports: ERROR
 exports.absolute_workdir = (rules) ->
+  vars = this.getAllVariables(rules)
   workdir = this.getAll('WORKDIR', rules)
   for rule in workdir
-    env = rule.arguments[0].match(/\$[\w]+/)
+    while match = exports.varPattern.exec(rule.arguments[0])
+      m = match[1] || match[2]
+      if exports.arg[m]
+        unless exports.env[m]
+          utils.log exports.pedantic_severity, "WORKDIR path #{rule.arguments} contains an ARG variable. WORKDIR should resolve to an absolute path at build time"
+          return exports.pedantic_ret
 
-    if exports.env[env]
-      rule.arguments[0] = rule.arguments[0].replace(env, exports.env[env])
-    else if env
-      utils.log 'ERROR', "WORKDIR path #{rule.arguments} contains undefined ENV variable on line #{rule.line}"
-      return 'failed'
+    rule.arguments[0] = exports.variablesReplace(vars, rule.arguments[0])
 
     if (typeof path.isAbsolute != "undefined")
       absolute = path.isAbsolute(rule.arguments[0])
@@ -287,5 +356,18 @@ exports.label_no_empty_value = (rules) ->
       for pair in argument.split(' ')
         if pair.slice(-1) == '='
           utils.log 'ERROR', "LABEL requires value for line #{rule.line}"
+          return 'failed'
+  return 'ok'
+
+# Variables used within allowed instructions must be defined in ENV or ARG
+# Reports: ERROR
+exports.variable_use = (rules) ->
+  vars = this.getAllVariables(rules)
+  for i in [ 'ADD', 'COPY', 'ENV', 'EXPOSE', 'FROM', 'LABEL', 'ONBUILD', 'RUN', 'STOPSIGNAL', 'USER', 'VOLUME', 'WORKDIR' ]
+    instruction = this.getAll(i, rules)
+    for rule in instruction
+      for argument in rule.arguments
+        unless exports.variablesDefined(vars, argument) is 'ok'
+          utils.log 'ERROR', "#{rule.instruction} contains undefined ARG or ENV variable on line #{rule.line}"
           return 'failed'
   return 'ok'
