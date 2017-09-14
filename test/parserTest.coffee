@@ -36,7 +36,7 @@ describe "parser", ->
     p.parser('test/dockerfiles/empty').should.be.deep.equal []
 
   it "should handle comment-only files", ->
-    p.parser('test/dockerfiles/comment_only').should.be.deep.equal [{line: 1, instruction: 'comment', arguments: ['MIT licensed']}]
+    p.parser('test/dockerfiles/comment_only').should.be.deep.equal [{raw: '# MIT licensed', line: 1, instruction: 'comment', arguments: ['MIT licensed']}]
 
   it "should return nothing when handling a non-existent file", ->
     p.parser('test/dockerfiles/nonexistent-file').should.be.deep.equal []
@@ -46,8 +46,8 @@ describe "parser", ->
 
   it "should handle line continuations", ->
     output = [
-      { line: 1, instruction: 'FROM', arguments: [ 'cargos:latest' ] },
-      { line: 3, instruction: 'RUN',  arguments: [ 'yum update &&', 'yum install mg &&', 'yum upgrade' ] },
-      { line: 7, instruction: 'RUN',  arguments: [ 'yum -y update && \\\\ yum -y install tmux' ] }
+      { raw: 'FROM cargos:latest', line: 1, instruction: 'FROM', arguments: [ 'cargos:latest' ] },
+      { raw: '    yum upgrade', line: 3, instruction: 'RUN',  arguments: [ 'yum update &&', 'yum install mg &&', 'yum upgrade' ] },
+      { raw: 'RUN yum -y update && \\\\ yum -y install tmux', line: 7, instruction: 'RUN',  arguments: [ 'yum -y update && \\\\ yum -y install tmux' ] }
     ]
     p.parser('test/dockerfiles/line_continuations').should.be.deep.equal output

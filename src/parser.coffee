@@ -40,17 +40,17 @@ exports.parser = (dockerfile) ->
             rule[0].arguments = rule[0].arguments.concat self.getArguments(line)
           else
             cont = true
-            rule.push line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
+            rule.push raw: line, line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
         # if current line does not end with \ and cont is true
         # push the saved rule + arguments of current line into `rules`
         # and set `cont` to false and empty `rule`
         else if cont and not line.endsWith '\\'
-          rules.push line: rule[0].line, instruction: rule[0].instruction, arguments: rule[0].arguments.concat self.getArguments(line)
+          rules.push raw: line, line: rule[0].line, instruction: rule[0].instruction, arguments: rule[0].arguments.concat self.getArguments(line)
           rule = []
           cont = false
         # Just save the line, nothing fancy going on now.
         else if not (line.endsWith '\\' and cont)
-          rules.push line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
+          rules.push raw: line, line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
 
       lineno++
   rules

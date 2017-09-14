@@ -32,7 +32,8 @@ exports.all = [
   'onbuild_copyadd',
   'onbuild_disallowed',
   'label_no_empty_value',
-  'variable_use'
+  'variable_use',
+  'no_trailing_spaces'
 ]
 
 # Match $VAR, ${VAR}, and ${VAR:-default}
@@ -370,4 +371,12 @@ exports.variable_use = (rules) ->
         unless exports.variablesDefined(vars, argument) is 'ok'
           utils.log 'ERROR', "#{rule.instruction} contains undefined ARG or ENV variable on line #{rule.line}"
           return 'failed'
+  return 'ok'
+
+# No trailing spaces
+exports.no_trailing_spaces = (rules) ->
+  for rule in rules
+    if rule.raw.endsWith ' '
+      utils.log 'ERROR', 'Lines cannot have trailing spaces'
+      return 'failed'
   return 'ok'
