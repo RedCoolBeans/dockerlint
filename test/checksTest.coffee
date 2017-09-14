@@ -277,3 +277,7 @@ describe "variable_use", ->
       { line: 3, instruction: 'ENV', arguments: ['EVAR3=$VAR3'] },
     ]
     c.variable_use(r).should.be.equal 'ok'
+
+describe "no_trailing_spaces", ->
+  it "should fail when lines contain trailing spaces", ->
+    c.no_trailing_spaces([ {raw: 'FROM: alpine '}]).should.be.equal 'failed'
