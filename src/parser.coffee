@@ -51,6 +51,8 @@ exports.parser = (dockerfile) ->
         # Just save the line, nothing fancy going on now.
         else if not (line.endsWith '\\' and cont)
           rules.push raw: line, line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
+      else if line.beginsWith '#'
+          rules.push raw: line, line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
 
       lineno++
   rules
