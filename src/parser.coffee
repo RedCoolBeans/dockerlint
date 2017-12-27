@@ -31,7 +31,7 @@ exports.parser = (dockerfile) ->
       return []
 
     for line in data
-      if utils.notEmpty(line)
+      if utils.notEmpty(line) and not line.startsWith '#'
         # If the current line ends with \ then set `cont` to true,
         # save the line and instruction and arguments into `rule`.
         if line.endsWith '\\'
