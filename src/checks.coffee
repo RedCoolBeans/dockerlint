@@ -68,8 +68,8 @@ exports.getAllExcept = (instruction, rules) ->
 
 # Return effective available variables from ARG and ENV
 exports.getAllVariables = (rules) ->
-  this.arg(rules)
-  this.env(rules)
+  this.arg(rules, true)
+  this.env(rules, true)
   # ENV overrides ARG https://docs.docker.com/engine/reference/builder/#using-arg-variables
   utils.merge(exports.arg, exports.env)
 
@@ -275,25 +275,27 @@ exports.sudo = (rules) ->
 
 # Check ENV syntax and save the variables for further evaluation if needed.
 # Reports: ERROR
-exports.env = (rules) ->
+exports.env = (rules, ignore = false) ->
   environs = this.getAll('ENV', rules)
   for rule in environs
     unless exports.mergeVariables(exports.env, rule) is 'ok'
-      utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
+      if not ignore
+        utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
       return 'failed'
   return 'ok'
 
 # Check ARG syntax and save the variables for further evaluation if needed.
 # Save pre-defined ARG variables
 # Reports: ERROR
-exports.arg = (rules) ->
+exports.arg = (rules, ignore = false) ->
   for pre in ['HTTP_PROXY', 'http_proxy', 'HTTPS_PROXY', 'http_proxy', 'FTP_PROXY', 'ftp_proxy', 'NO_PROXY', 'no_proxy']
     exports.arg[pre] = 'true'
 
   args = this.getAll('ARG', rules)
   for rule in args
     unless exports.mergeVariables(exports.arg, rule) is 'ok'
-      utils.log 'ERROR', "ARG invalid format #{rule.arguments} on line #{rule.line}"
+      if not ignore
+        utils.log 'ERROR', "ARG invalid format #{rule.arguments} on line #{rule.line}"
       return 'failed'
   return 'ok'
 
