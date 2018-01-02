@@ -85,9 +85,7 @@ exports.mergeVariables = (o, rule) ->
       if env
         env = env.slice(1)
       else
-        # empty ENV definition so set an empty value
-        o[argument] = ''
-        return 'ok'
+        return 'failed'
       if env[0] && env[1]
         o[env[0]] = env[1]
       else
