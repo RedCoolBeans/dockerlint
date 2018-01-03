@@ -33,7 +33,8 @@ exports.all = [
   'onbuild_disallowed',
   'label_no_empty_value',
   'variable_use',
-  'no_trailing_spaces'
+  'no_trailing_spaces',
+  'unknown_instruction'
 ]
 
 # Match $VAR, ${VAR}, and ${VAR:-default}
@@ -380,5 +381,20 @@ exports.no_trailing_spaces = (rules) ->
   for rule in rules
     if rule.raw.endsWith ' '
       utils.log 'ERROR', 'Lines cannot have trailing spaces'
+      return 'failed'
+  return 'ok'
+
+# Unknown instructions are not supported by dockerlint
+# Reports: ERROR
+exports.unknown_instruction = (rules) ->
+  allowed_instructions = [ 'ADD', 'ARG', 'CMD', 'COPY', 'ENTRYPOINT', 'ENV', 'EXPOSE', 'FROM',
+                           'HEALTHCHECK', 'LABEL', 'MAINTAINER', 'ONBUILD', 'RUN', 'SHELL',
+                           'STOPSIGNAL', 'USER', 'VAR', 'VOLUME', 'WORKDIR' ]
+  for rule in rules
+    if rule.instruction not in allowed_instructions
+      if utils.notEmpty rule.instruction
+        utils.log 'ERROR', "#{rule.instruction} is invalid on line #{rule.line}"
+      else
+        utils.log 'ERROR', "Empty / bogus instruction is invalid on line #{rule.line}"
       return 'failed'
   return 'ok'
