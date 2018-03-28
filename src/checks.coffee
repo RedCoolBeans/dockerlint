@@ -390,7 +390,8 @@ exports.unknown_instruction = (rules) ->
   allowed_instructions = [ 'ADD', 'ARG', 'CMD', 'COPY', 'ENTRYPOINT', 'ENV', 'EXPOSE', 'FROM',
                            'HEALTHCHECK', 'LABEL', 'MAINTAINER', 'ONBUILD', 'RUN', 'SHELL',
                            'STOPSIGNAL', 'USER', 'VAR', 'VOLUME', 'WORKDIR' ]
-  for rule in rules
+  non_comments = this.getAllExcept('comment', rules)
+  for rule in non_comments
     if rule.instruction not in allowed_instructions
       if utils.notEmpty rule.instruction
         utils.log 'ERROR', "#{rule.instruction} is invalid on line #{rule.line}"
