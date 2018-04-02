@@ -85,6 +85,10 @@ exports.mergeVariables = (o, rule) ->
       env = argument.match(/^(\S+)\s(.*)/)
       if env
         env = env.slice(1)
+      else if argument
+        # empty ENV definition so set an empty value
+        o[argument] = ''
+        return 'ok'
       else
         return 'failed'
       if env[0] && env[1]
