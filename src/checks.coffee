@@ -75,7 +75,7 @@ exports.getAllVariables = (rules) ->
   utils.merge(exports.arg, exports.env)
 
 # Merge variables from rule (ARG, ENV) with provided object
-exports.mergeVariables = (o, rule) ->
+exports.mergeVariables = (o, rule, empty) ->
   for argument in rule.arguments
     if argument.split(' ')[0].match(/(\w+)=([^\s]+)/)
       for pair in argument.split(' ')
@@ -85,8 +85,8 @@ exports.mergeVariables = (o, rule) ->
       env = argument.match(/^(\S+)\s(.*)/)
       if env
         env = env.slice(1)
-      else if argument
-        # empty ENV definition so set an empty value
+      else if argument && empty
+        # empty ARG definition so set an empty value
         o[argument] = ''
         return 'ok'
       else
@@ -283,7 +283,7 @@ exports.sudo = (rules) ->
 exports.env = (rules, ignore = false) ->
   environs = this.getAll('ENV', rules)
   for rule in environs
-    unless exports.mergeVariables(exports.env, rule) is 'ok'
+    unless exports.mergeVariables(exports.env, rule, false) is 'ok'
       if not ignore
         utils.log 'ERROR', "ENV invalid format #{rule.arguments} on line #{rule.line}"
       return 'failed'
@@ -298,7 +298,7 @@ exports.arg = (rules, ignore = false) ->
 
   args = this.getAll('ARG', rules)
   for rule in args
-    unless exports.mergeVariables(exports.arg, rule) is 'ok'
+    unless exports.mergeVariables(exports.arg, rule, true) is 'ok'
       if not ignore
         utils.log 'ERROR', "ARG invalid format #{rule.arguments} on line #{rule.line}"
       return 'failed'
