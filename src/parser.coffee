@@ -4,7 +4,7 @@ utils = require "#{__dirname}/utils"
 # Return the first word from a string
 exports.getInstruction = (s) ->
   instruction = s.split(/[ \t]/)[0]
-  if instruction.beginsWith '#'
+  if instruction.beginsWith('#') or instruction.match(/\s*[#;].*$/)
     'comment'
   else
     instruction
