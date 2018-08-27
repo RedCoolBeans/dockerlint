@@ -101,7 +101,7 @@ exports.mergeVariables = (o, rule, empty) ->
 exports.variablesDefined = (vars, s) ->
   while match = exports.varPattern.exec(s)
     m = match[1] || match[2]
-    unless vars[m]
+    unless vars[m] || isFinite(m) # Command line arguments such as $1, $2... should be ignored
       #utils.log 'DEBUG', "Undefined variable match #{match} within #{s}"
       return 'failed'
   return 'ok'
