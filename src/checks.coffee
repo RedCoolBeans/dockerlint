@@ -262,8 +262,17 @@ exports.multiple_entries = (rules) ->
   for e in [ 'CMD', 'ENTRYPOINT' ]
     rule = this.getAll(e, rules)
     if rule.length > 1
-      utils.log 'ERROR', "Multiple #{e} instructions found, only line #{rule[rule.length-1].line} will take effect"
-      return 'failed'
+      # Checks for multi-stage builds
+      last_rule = rule.pop()
+      froms = this.getAll('FROM', rules)
+      while rule.length > 0
+        matches = []
+        previous_rule = rule.pop()
+        matches.push f for f in froms when f.line < last_rule.line && f.line > previous_rule.line
+        if matches.length == 0
+          utils.log 'ERROR', "Multiple #{e} instructions found in the same FROM instruction, only line #{last_rule.line} will take effect"
+          return 'failed'
+        last_rule = previous_rule
   return 'ok'
 
 # You should avoid installing or using sudo since it has unpredictable TTY and
