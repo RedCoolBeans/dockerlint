@@ -34,7 +34,8 @@ exports.all = [
   'label_no_empty_value',
   'variable_use',
   'no_trailing_spaces',
-  'unknown_instruction'
+  'unknown_instruction',
+  'maintainer_deprecated'
 ]
 
 # Match $VAR, ${VAR}, and ${VAR:-default}
@@ -411,4 +412,15 @@ exports.unknown_instruction = (rules) ->
       else
         utils.log 'ERROR', "Empty / bogus instruction is invalid on line #{rule.line}"
       return 'failed'
+  return 'ok'
+
+# https://docs.docker.com/engine/reference/builder/#maintainer-deprecated
+# Reports: WARN
+exports.maintainer_deprecated = (rules) ->
+  ms = this.getAll('MAINTAINER', rules)
+  if ms.length > 0
+    for m in ms
+      utils.log exports.pedantic_severity, "MAINTAINER instruction is deprecated on line #{m.line}"
+      return exports.pedantic_ret
+
   return 'ok'

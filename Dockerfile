@@ -1,6 +1,6 @@
 FROM node:4-alpine
 
-MAINTAINER Red Cool Beans <maintainer@redcoolbeans.com>
+LABEL maintainer="Red Cool Beans <maintainer@redcoolbeans.com>"
 
 RUN npm install -g dockerlint \
  && npm cache clean
