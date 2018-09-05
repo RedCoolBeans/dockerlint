@@ -131,12 +131,20 @@ describe "add", ->
 describe "multiple_entries", ->
   for cmd in [ 'CMD', 'ENTRYPOINT' ]
     do (cmd) ->
-      it "should fail when multiple #{cmd} are set", ->
+      it "should fail when multiple #{cmd} are set in the same FROM instruction", ->
         r = [
           { line: 1, instruction: cmd, arguments: ['/sbin/sshd -D'] },
           { line: 2, instruction: cmd, arguments: ['/sbin/sshd -D'] },
         ]
         c.multiple_entries(r).should.be.equal 'failed'
+
+      it "should not fail when multiple #{cmd} are set in different FROM instruction (multi-stage builds)", ->
+        r = [
+          { line: 1, instruction: cmd, arguments: ['/sbin/sshd -D'] },
+          { line: 2, instruction: 'FROM' },
+          { line: 3, instruction: cmd, arguments: ['/sbin/sshd -D'] },
+        ]
+        c.multiple_entries(r).should.be.equal 'ok'
 
 describe "sudo", ->
   it "should warn when sudo is used", ->
