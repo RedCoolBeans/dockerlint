@@ -38,6 +38,8 @@ exports.parser = (dockerfile) ->
           if cont
             # already on a continuation, just append to arguments
             rule[0].arguments = rule[0].arguments.concat self.getArguments(line)
+            if not utils.notEmpty(rule[0].arguments[0])
+              rule[0].arguments.shift()
           else
             cont = true
             rule.push raw: line, line: lineno, instruction: self.getInstruction(line), arguments: self.getArguments(line)
