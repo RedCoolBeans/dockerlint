@@ -96,7 +96,7 @@ or pass it to every invocation:
 
 ## License
 
-MIT, please see the LICENSE file.
+MIT, please see the [LICENSE](LICENSE) file.
 
 ## Contributing
 
