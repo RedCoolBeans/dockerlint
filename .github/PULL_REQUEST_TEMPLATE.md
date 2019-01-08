@@ -4,7 +4,7 @@ _Please provide issue details here and how your commit(s) fix it_.
 
 ### Steps to reproduce/test case
 
-_Please provide necessary steps and relevant parts of your Dockkerfile
+_Please provide necessary steps and relevant parts of your Dockerfile
 below for reproduction of this issue_
 
 <!--
