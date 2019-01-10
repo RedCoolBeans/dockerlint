@@ -386,8 +386,8 @@ exports.variable_use = (rules) ->
     for rule in instruction
       for argument in rule.arguments
         unless exports.variablesDefined(vars, argument) is 'ok'
-          utils.log 'ERROR', "#{rule.instruction} contains undefined ARG or ENV variable on line #{rule.line}"
-          return 'failed'
+          utils.log exports.pedantic_severity, "#{rule.instruction} might contain undefined ARG or ENV variable on line #{rule.line}"
+          return 'warning'
   return 'ok'
 
 # No trailing spaces
