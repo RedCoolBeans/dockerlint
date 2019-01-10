@@ -229,8 +229,8 @@ describe "label_no_empty_value", ->
 describe "variable_use", ->
   for cmd in [ 'ADD', 'COPY', 'EXPOSE', 'FROM', 'LABEL', 'ONBUILD', 'RUN', 'STOPSIGNAL', 'USER', 'VOLUME', 'WORKDIR' ]
     do (cmd) ->
-      it "should fail when ARG or ENV is undefined when #{cmd} is used", ->
-        c.variable_use([ {line: 1, instruction: cmd, arguments: ['$DNE']} ]).should.be.equal 'failed'
+      it "should warn when ARG or ENV is undefined when #{cmd} is used", ->
+        c.variable_use([ {line: 1, instruction: cmd, arguments: ['$DNE']} ]).should.be.equal 'warning'
 
       it "should pass when ARG is defined when #{cmd} is used", ->
         r = [
@@ -258,8 +258,8 @@ describe "variable_use", ->
         c.variable_use(r).should.be.equal 'ok'
 
   # ENV requires different syntax in the arguments
-  it "should fail when ARG or ENV is undefined when ENV is used", ->
-    c.variable_use([ {line: 1, instruction: 'ENV', arguments: ['EVAR=$DNE']} ]).should.be.equal 'failed'
+  it "should warn when ARG or ENV is undefined when ENV is used", ->
+    c.variable_use([ {line: 1, instruction: 'ENV', arguments: ['EVAR=$DNE']} ]).should.be.equal 'warning'
 
   it "should pass when ARG is defined when ENV is used", ->
     r = [
