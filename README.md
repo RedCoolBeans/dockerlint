@@ -94,6 +94,11 @@ or pass it to every invocation:
 - Add support for --version which checks against a specific Docker version
 - Refactor code to move the rule specific functions into a Rule class
 
+## CI/CD
+
+Buddy natively supports the linter, allowing you to create a pipeline that will check the syntax, build the Docker image and push it to the registry. 
+Check [Dockerfile linter action](https://github.com/buddy-works/dockerfile-linter)
+
 ## License
 
 MIT, please see the LICENSE file.
